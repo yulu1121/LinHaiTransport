@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        tools:ignore="UselessParent">
+
+    <com.anshi.linhaitransport.selfview.EaseImageView
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:scaleType="centerCrop"
+        app:ease_shape_type="rectangle"
+        app:ease_radius="4dp"
+        android:contentDescription="@null"
+        android:id="@+id/detail_iv"
+        />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:contentDescription="@null"
+            android:id="@+id/delete_iv"
+            android:src="@drawable/pg_delete"
+            />
+    </FrameLayout>
+</LinearLayout>

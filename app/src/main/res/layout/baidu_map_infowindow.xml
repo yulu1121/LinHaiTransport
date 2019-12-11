@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/edit_back_white"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="match_parent"
+        android:inputType="text"
+        android:background="@drawable/bottom_line"
+        android:hint="请输入建设时间"
+        android:textSize="@dimen/low_txt"
+        android:layout_height="wrap_content"
+         />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_person"
+        android:inputType="text"
+        android:background="@drawable/bottom_line"
+        android:layout_marginTop="10dp"
+        android:hint="请输入负责路长"
+        android:textSize="@dimen/low_txt"
+        />
+    <EditText
+        android:id="@+id/et_xunlu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入巡路员"
+        android:inputType="text"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bottom_line"
+        android:textSize="@dimen/low_txt"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textColor="@color/white"
+        android:text="提交"
+        android:id="@+id/upload_btn"
+        android:textSize="@dimen/low_txt"
+        android:background="@color/color_main_trans"
+        android:layout_marginTop="10dp"
+        />
+</LinearLayout>

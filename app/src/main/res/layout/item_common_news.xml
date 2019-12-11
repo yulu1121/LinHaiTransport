@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/item_click"
+    android:layout_marginBottom="10dp"
+    >
+    <com.anshi.linhaitransport.selfview.EaseImageView
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:scaleType="centerCrop"
+        app:ease_shape_type="rectangle"
+        app:ease_radius="4dp"
+        android:id="@+id/pay_iv"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@null"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_alignTop="@id/pay_iv"
+        android:layout_toEndOf="@id/pay_iv"
+        android:id="@+id/pay_trans_tv"
+        android:paddingStart="5dp"
+        android:paddingEnd="0dp"
+        android:textSize="@dimen/medium_txt"
+        android:textColor="@color/black"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/low_txt"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:layout_centerVertical="true"
+        android:gravity="center|end"
+        android:layout_toEndOf="@id/pay_iv"
+        android:layout_alignBottom="@id/pay_iv"
+        android:id="@+id/time_tv"
+        android:textColor="@color/grey"
+        />
+</RelativeLayout>

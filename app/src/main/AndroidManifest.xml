@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.anshi.linhaitransport">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 精细定位授权 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- 网络状态 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/pg_logo"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:name=".base.BaseApplication"
+        android:roundIcon="@mipmap/pg_logo"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:targetApi="n">
+        <activity android:name=".view.MainActivity" android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".view.login.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            >
+        </activity>
+        <activity android:name=".view.map.MainMapActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.roadmanager.RoadManagerActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.filemanager.FileManagerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            />
+        <activity android:name=".view.tourmanager.TourManagerActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.image.ImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.curing.CuringActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.casedeal.CaseDealActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.casedeal.DealDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.endcase.EndCaseActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.roadstructure.RoadStructureActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.casedeal.RoadPersonActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.casedeal.ManagerDealActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            />
+        <activity android:name=".view.file.FileDisplayActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/horizontal_slide"
+            />
+        <!--知乎图片选择器，适配7.0系统-->
+        <provider
+            android:name=".utils.PhotoFileProvider"
+            android:authorities="com.anshi.linhaitransport.zhihu.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/zhihu_paths" />
+        </provider>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="wBrVPuk1SwWxosrXpav1zNCVbUQxG9Y3" />
+        <service android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"/>
+    </application>
+
+</manifest>

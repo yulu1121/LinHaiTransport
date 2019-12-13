@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +21,12 @@ import android.widget.TextView;
 
 import com.anshi.linhaitransport.R;
 import com.anshi.linhaitransport.base.BaseActivity;
+import com.anshi.linhaitransport.entry.MapMarkerEntry;
 import com.anshi.linhaitransport.entry.MarkerInfoUtil;
+import com.anshi.linhaitransport.utils.Constants;
+import com.anshi.linhaitransport.utils.DialogBuild;
 import com.anshi.linhaitransport.utils.StatusBarUtils;
+import com.anshi.linhaitransport.utils.ToastUtils;
 import com.anshi.linhaitransport.utils.Utils;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -60,15 +65,27 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.google.gson.Gson;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import okhttp3.ResponseBody;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainMapActivity extends BaseActivity implements OnGetSuggestionResultListener,OnGetPoiSearchResultListener,OnGetDistricSearchResultListener {
     private MapView mMapView;
@@ -95,6 +112,7 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         mSearch = SuggestionSearch.newInstance();
         mSearch.setOnGetSuggestionResultListener(this);
         addEventListener();
+        getAllMarkerList();
     }
     private PopupWindow popupWindow;
     private List<SuggestionResult.SuggestionInfo> mGradeList = new ArrayList<>();
@@ -142,23 +160,62 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
     }
 
 
-    private void setMarkerInfo() {
+    private void getAllMarkerList(){
+        mDistrictSearch.searchDistrict(new DistrictSearchOption()
+                .cityName("凌海"));
+        mService.getAllRoadInfo()
+                .map(new Func1<ResponseBody, ResponseBody>() {
+                    @Override
+                    public ResponseBody call(ResponseBody responseBody) {
+                        return responseBody;
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        try {
+                            String string = responseBody.string();
+                            if (Utils.isGoodJson(string)){
+                                Gson gson = new Gson();
+                                MapMarkerEntry mapMarkerEntry = gson.fromJson(string, MapMarkerEntry.class);
+                                if (mapMarkerEntry.getCode()== Constants.SUCCESS_CODE){
+                                    if (mapMarkerEntry.getData()!=null&&mapMarkerEntry.getData().size()>0){
+                                        setMarkerInfo(mapMarkerEntry);
+                                    }
+                                }else {
+                                    ToastUtils.showShortToast(mContext,mapMarkerEntry.getMsg());
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                });
+    }
+
+
+    private void setMarkerInfo(MapMarkerEntry markerInfo) {
          List<MarkerInfoUtil> options = new ArrayList<>();
-         options.add(new MarkerInfoUtil(41.165937752848,121.33713309907,"S308-大锦线"));
-         options.add(new MarkerInfoUtil( 41.252576,121.242061,"S204-渤海大道"));
-         options.add(new MarkerInfoUtil(41.114252180318,121.37222585297,"X711-凌海大道"));
-         options.add(new MarkerInfoUtil( 41.152451172074, 121.35376315949,"G102-京抚线"));
-         options.add(new MarkerInfoUtil(41.206838,121.146194,"S209-宝锦线"));
-         options.add(new MarkerInfoUtil(40.92743,121.391539,"滨海公路"));
-         options.add(new MarkerInfoUtil(41.184101625127,121.38592546115,"凌海农电新村"));
-         options.add(new MarkerInfoUtil(41.225680669061,121.32575147843 ,"兴闫线(3级道路)"));
-         options.add(new MarkerInfoUtil(41.1821590328,  121.36138644954 ,"锦凌路(4级道路)"));
-         options.add(new MarkerInfoUtil(41.209037090494, 121.36341832677 ,"兴工街(4级道路)"));
-         options.add(new MarkerInfoUtil(41.233104,121.009968 ,"牤牛屯村"));
-         options.add(new MarkerInfoUtil(41.247301387693, 120.91505859588  ,"X052-锦东线"));
-         options.add(new MarkerInfoUtil(41.067543334462,121.26744129997999,"双何线"));
-        //112.17453,32.06426//32.04449,112.143557//32.052539,112.142191
-//创建OverlayOptions属性
+        List<MapMarkerEntry.DataBean> data = markerInfo.getData();
+        for (int i = 0; i < data.size(); i++) {
+            MapMarkerEntry.DataBean dataBean = data.get(i);
+            MarkerInfoUtil markerInfoUtil = new MarkerInfoUtil();
+            markerInfoUtil.setmMarkerId(dataBean.getId());
+            markerInfoUtil.setBulidTime(dataBean.getBuildTime());
+            markerInfoUtil.setLatitude(Double.parseDouble(dataBean.getLatitude()));
+            markerInfoUtil.setLongitude(Double.parseDouble(dataBean.getLongitude()));
+            markerInfoUtil.setName(dataBean.getRoadName());
+            markerInfoUtil.setRoadManager(dataBean.getRoadManager());
+            markerInfoUtil.setRoadDeal(dataBean.getRoadInspector());
+            markerInfoUtil.setRoadYangHu(dataBean.getRoadMaintenance());
+            options.add(markerInfoUtil);
+        }
         LatLng latLng ;
         OverlayOptions option;
         List<OverlayOptions> optionsList = new ArrayList<>();
@@ -169,7 +226,7 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
             //设置marker
             Bundle bundle = new Bundle();
             //info必须实现序列化接口
-            bundle.putString("address", info.getName());
+            bundle.putSerializable("address",info);
             option = new MarkerOptions()
                     .position(latLng)//设置位置
                     .extraInfo(bundle)
@@ -180,6 +237,73 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         }
         mBaiduMap.addOverlays(optionsList);
     }
+
+    private KProgressHUD kProgressHUD;
+    //String id,String lat,String lng,String roadName,String roadManager,String roadInspector,String roadMaintenance,String remarks,String buildTime
+    private void saveMarkerToServer(String id,String lat,String lng,String roadName,String roadManager,String roadInspector,String roadMaintenance,String buildTime){
+        if (!isFinishing()){
+            kProgressHUD = DialogBuild.getBuild().createCommonLoadDialog(this,"正在加载");
+        }
+        HashMap<String,String> hashMap = new HashMap<>();
+
+            if (!TextUtils.isEmpty(id)){
+                hashMap.put("id",id);
+            }
+            hashMap.put("lat",lat);
+            hashMap.put("lng",lng);
+            hashMap.put("roanName",roadName);
+            hashMap.put("roadManager",roadManager);
+            hashMap.put("roadInspector",roadInspector);
+            hashMap.put("roadMaintenance",roadMaintenance);
+            hashMap.put("buildTime",buildTime);
+        mService.saveRoadApp(hashMap)
+                .map(new Func1<ResponseBody, ResponseBody>() {
+                    @Override
+                    public ResponseBody call(ResponseBody responseBody) {
+                        return responseBody;
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        if (null!=kProgressHUD){
+                            kProgressHUD.dismiss();
+                        }
+                        try {
+                            String string = responseBody.string();
+                            if (Utils.isGoodJson(string)){
+                                try {
+                                    JSONObject jsonObject1 = new JSONObject(string);
+                                    int code = jsonObject1.getInt("code");
+                                    String msg = jsonObject1.getString("msg");
+                                    if (code==Constants.SUCCESS_CODE){
+                                        ToastUtils.showShortToast(mContext,"提交成功");
+                                        mBaiduMap.clear();
+                                        getAllMarkerList();
+                                    }else {
+                                        ToastUtils.showShortToast(mContext,msg);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (null!=kProgressHUD){
+                            kProgressHUD.dismiss();
+                        }
+                        throwable.printStackTrace();
+                    }
+                });
+    }
+
+
 
 
 
@@ -201,25 +325,48 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         mBaiduMap.setMyLocationEnabled(true);
-        mDistrictSearch.searchDistrict(new DistrictSearchOption()
-                .cityName("凌海"));
         //setMarkerInfo();
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 LinearLayout mLinearLayout = (LinearLayout) LayoutInflater.from(MainMapActivity.this).inflate(R.layout.baidu_map_infowindow,null);
-                EditText mText = mLinearLayout.findViewById(R.id.et_name);
-                EditText phone = mLinearLayout.findViewById(R.id.et_person);
-                EditText textView = mLinearLayout.findViewById(R.id.et_xunlu);
-                mText.setText("纬度:"+marker.getPosition().latitude);
-                phone.setText("经度:"+marker.getPosition().longitude);
-                textView.setText("道路:"+marker.getExtraInfo().getString("address"));
+                TextView roadName = mLinearLayout.findViewById(R.id.road_name);
+                final EditText bulidTime = mLinearLayout.findViewById(R.id.et_name);
+                final EditText mManagerEt = mLinearLayout.findViewById(R.id.et_person);
+                final EditText xunluEt = mLinearLayout.findViewById(R.id.et_xunlu);
+                final EditText yanghuEt = mLinearLayout.findViewById(R.id.et_yanghu);
+                final MarkerInfoUtil address = (MarkerInfoUtil) marker.getExtraInfo().getSerializable("address");
                 Button uploadBtn = mLinearLayout.findViewById(R.id.upload_btn);
+                if (null!=address){
+                    uploadBtn.setText("修改");
+                    roadName.setText(address.getName());
+                    bulidTime.setText(address.getBulidTime());
+                    mManagerEt.setText(address.getRoadManager());
+                    xunluEt.setText(address.getRoadDeal());
+                    yanghuEt.setText(address.getRoadYangHu());
+                    mRoad = address.getName();
+                }else{
+                    roadName.setText(mRoad);
+                    uploadBtn.setText("提交");
+                }
+                roadName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBaiduMap.hideInfoWindow();
+                    }
+                });
                 uploadBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mBaiduMap.hideInfoWindow();
+                        if (null!=address){
+                            saveMarkerToServer(address.getmMarkerId(),String.valueOf(address.getLatitude()),String.valueOf(address.getLongitude()),
+                                    mRoad,mManagerEt.getText().toString(),xunluEt.getText().toString(),yanghuEt.getText().toString(),bulidTime.getText().toString());
+                        }else {
+                            saveMarkerToServer(null,String.valueOf(marker.getPosition().latitude),String.valueOf(marker.getPosition().longitude),
+                                    mRoad,mManagerEt.getText().toString(),xunluEt.getText().toString(),yanghuEt.getText().toString(),bulidTime.getText().toString());
+                        }
                     }
                 });
                 InfoWindow window = new InfoWindow(mLinearLayout,marker.getPosition(),-47);
@@ -378,10 +525,8 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
                 BitmapDescriptor bitmap = BitmapDescriptorFactory
                         .fromResource(R.drawable.pg_location);
 //构建MarkerOption，用于在地图上添加Marker
-                Bundle bundle = new Bundle();
-                bundle.putString("address",mRoad);
+
                 OverlayOptions option = new MarkerOptions()
-                        .extraInfo(bundle)
                         .position(point)
                         .icon(bitmap);
 //在地图上添加Marker，并显示

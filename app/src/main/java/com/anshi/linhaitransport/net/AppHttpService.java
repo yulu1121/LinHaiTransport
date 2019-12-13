@@ -57,6 +57,10 @@ public interface AppHttpService {
     Observable<ResponseBody> getFileList();//获取文件列表
     @POST("map/location")
     Observable<ResponseBody> uploadLocation(@QueryMap Map<String,String> queryMap);//上传地点
+    @POST("roadMarker/getAllRoadInfo")
+    Observable<ResponseBody> getAllRoadInfo();//获取所有地点
+    @POST("roadMarker/saveRoadApp")
+    Observable<ResponseBody> saveRoadApp(@QueryMap Map<String,String> queryMap);
 
 
 

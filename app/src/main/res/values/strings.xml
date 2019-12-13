@@ -11,4 +11,8 @@
     <string name="search">搜索</string>
     <string name="deal">处理</string>
     <string name="road_report">路况报告</string>
+    <string name="road_manager">路&#12288;&#12288;长:</string>
+    <string name="xunluyuan">巡&#8194;路&#8194;员:</string>
+    <string name="yanghuyuan">养&#8194;护&#8194;员:</string>
+
 </resources>

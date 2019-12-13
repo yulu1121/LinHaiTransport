@@ -15,6 +15,47 @@ public class MarkerInfoUtil implements Serializable {
     private int imgId;//图片
     private String description;//描述
     private String phone;
+    private String roadManager;
+    private String roadDeal;
+    private String roadYangHu;
+    private String bulidTime;
+    private String mMarkerId;
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getRoadManager() {
+        return roadManager;
+    }
+
+    public void setRoadManager(String roadManager) {
+        this.roadManager = roadManager;
+    }
+
+    public String getRoadDeal() {
+        return roadDeal;
+    }
+
+    public void setRoadDeal(String roadDeal) {
+        this.roadDeal = roadDeal;
+    }
+
+    public String getRoadYangHu() {
+        return roadYangHu;
+    }
+
+    public void setRoadYangHu(String roadYangHu) {
+        this.roadYangHu = roadYangHu;
+    }
+
+    public String getBulidTime() {
+        return bulidTime;
+    }
+
+    public void setBulidTime(String bulidTime) {
+        this.bulidTime = bulidTime;
+    }
+
     //构造方法
     public MarkerInfoUtil() {}
     public MarkerInfoUtil(double latitude, double longitude, String name){
@@ -75,5 +116,13 @@ public class MarkerInfoUtil implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getmMarkerId() {
+        return mMarkerId;
+    }
+
+    public void setmMarkerId(String mMarkerId) {
+        this.mMarkerId = mMarkerId;
     }
 }

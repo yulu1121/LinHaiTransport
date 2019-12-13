@@ -8,36 +8,101 @@
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
     android:orientation="vertical" >
-
-    <EditText
-        android:id="@+id/et_name"
-        android:layout_width="match_parent"
-        android:inputType="text"
-        android:background="@drawable/bottom_line"
-        android:hint="请输入建设时间"
-        android:textSize="@dimen/low_txt"
-        android:layout_height="wrap_content"
-         />
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_person"
-        android:inputType="text"
-        android:background="@drawable/bottom_line"
-        android:layout_marginTop="10dp"
-        android:hint="请输入负责路长"
+        android:gravity="center"
+        android:drawableEnd="@drawable/pg_delete_black"
+        android:id="@+id/road_name"
         android:textSize="@dimen/low_txt"
         />
-    <EditText
-        android:id="@+id/et_xunlu"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请输入巡路员"
-        android:inputType="text"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="建成时间:"
+            android:textSize="@dimen/low_txt"
+            />
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:inputType="text"
+            android:background="@drawable/bottom_line"
+            android:hint="请输入建设时间"
+            android:textSize="@dimen/low_txt"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="10dp"
-        android:background="@drawable/bottom_line"
-        android:textSize="@dimen/low_txt"
-        />
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/low_txt"
+            android:text="@string/road_manager"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_person"
+            android:inputType="text"
+            android:background="@drawable/bottom_line"
+            android:hint="请输入负责路长"
+            android:textSize="@dimen/low_txt"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/low_txt"
+            android:text="@string/xunluyuan"
+            />
+        <EditText
+            android:id="@+id/et_xunlu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入巡路员"
+            android:inputType="text"
+            android:background="@drawable/bottom_line"
+            android:textSize="@dimen/low_txt"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/low_txt"
+            android:text="@string/yanghuyuan"
+            />
+        <EditText
+            android:id="@+id/et_yanghu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入养护员"
+            android:inputType="text"
+            android:background="@drawable/bottom_line"
+            android:textSize="@dimen/low_txt"
+            />
+    </LinearLayout>
     <Button
         android:layout_width="match_parent"
         android:layout_height="30dp"

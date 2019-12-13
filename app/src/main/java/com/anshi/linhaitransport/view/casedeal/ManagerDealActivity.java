@@ -78,13 +78,15 @@ public class ManagerDealActivity extends BaseActivity {
         }
     }
 
+
+
+
     private void initView() {
         TextView titleTv = findViewById(R.id.title_tv);
         titleTv.setText("案件列表");
         mRefreshLayout = findViewById(R.id.smart_refresh);
         mRecyclerView = findViewById(R.id.case_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-
     }
     private KProgressHUD commonLoadDialog;
     private void findCaseList(final boolean refresh){

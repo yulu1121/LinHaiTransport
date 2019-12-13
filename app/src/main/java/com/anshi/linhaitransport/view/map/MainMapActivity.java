@@ -203,7 +203,7 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         mBaiduMap.setMyLocationEnabled(true);
         mDistrictSearch.searchDistrict(new DistrictSearchOption()
                 .cityName("凌海"));
-        setMarkerInfo();
+        //setMarkerInfo();
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @SuppressLint("SetTextI18n")
             @Override

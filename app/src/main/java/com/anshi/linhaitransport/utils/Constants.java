@@ -2,10 +2,10 @@ package com.anshi.linhaitransport.utils;
 
 public class Constants {
     // https://www.showdoc.cc/sharfish?page_id=2523683048128346
-    //do.anssy.com:8080
-    public static final String COMMON_URL_HEADER = "http://to.anssy.com/lhtraffic/lhjtapp/";
-    public static final String IMAGE_URL = "http://to.anssy.com/lhtraffic";
-    public static final String WEB_URL = "http://to.anssy.com/lhtraffic/lhjtapp/new/getNewNote/";
+    //to.anssy.com
+    public static final String COMMON_URL_HEADER = "http://192.168.0.90:8080/lhtraffic/lhjtapp/";
+    public static final String IMAGE_URL = "http://192.168.0.90:8080/lhtraffic";
+    public static final String WEB_URL = "http://192.168.0.90:8080/lhtraffic/lhjtapp/new/getNewNote/";
     public static final String CURRENT_LONGTITUDE="longtitude";
     public static final String CURRENT_LATITUDE = "latitude";
 

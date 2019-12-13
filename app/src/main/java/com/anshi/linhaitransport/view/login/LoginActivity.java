@@ -3,6 +3,7 @@ package com.anshi.linhaitransport.view.login;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -80,6 +81,7 @@ public class LoginActivity extends BaseActivity {
                         }
                         try {
                             String string = responseBody.string();
+                            Log.e("xxx",string);
                             if (Utils.isGoodJson(string)){
                                 Gson gson = new Gson();
                                 LoginEntry loginEntry = gson.fromJson(string, LoginEntry.class);

@@ -515,7 +515,7 @@ public class CuringActivity extends TakePhotoActivity implements View.OnClickLis
         }
         String filePath = stringBuilder.substring(0, stringBuilder.length() - 1);
         mService.addCase(mCaseTitleEt.getText().toString(),String.valueOf(mCurrentCaseId),
-                mRoadEt.getText().toString(),String.valueOf(mCurrentAreaId),String.valueOf(userId),String.valueOf(gps.getWgLon()),String.valueOf(gps.getWgLat()),mCurrentAddress,filePath)
+                mRoadEt.getText().toString(),String.valueOf(mCurrentAreaId),String.valueOf(userId),String.valueOf(gps.getWgLon()),String.valueOf(gps.getWgLat()),mCurrentAddress,filePath,"2")
                 .map(new Func1<ResponseBody, ResponseBody>() {
                     @Override
                     public ResponseBody call(ResponseBody responseBody) {

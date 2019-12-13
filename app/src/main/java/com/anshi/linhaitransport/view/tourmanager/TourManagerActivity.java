@@ -31,6 +31,7 @@ import com.anshi.linhaitransport.base.BaseApplication;
 import com.anshi.linhaitransport.entry.AreaEntry;
 import com.anshi.linhaitransport.entry.CaseTypeEntry;
 import com.anshi.linhaitransport.entry.ImageInfo;
+import com.anshi.linhaitransport.entry.UploadEntry;
 import com.anshi.linhaitransport.entry.UploadIvEntry;
 import com.anshi.linhaitransport.net.AppHttpService;
 import com.anshi.linhaitransport.selfview.EaseImageView;
@@ -444,9 +445,15 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
         for (int i = 0; i <mImagePathList.size() ; i++) {
             stringBuilder.append(mImagePathList.get(i)).append(",");
         }
+        final String proType;
+        if (SharedPreferenceUtils.getString(mContext,"deptName").contains("巡路员")){
+            proType = "1";
+        }else {
+            proType = "2";
+        }
         String filePath = stringBuilder.substring(0, stringBuilder.length() - 1);
         mService.addCase(mCaseTitleEt.getText().toString(),String.valueOf(mCurrentCaseId),
-                mRoadEt.getText().toString(),String.valueOf(mCurrentAreaId),String.valueOf(userId),String.valueOf(gps.getWgLon()),String.valueOf(gps.getWgLat()),mCurrentAddress,filePath)
+                mRoadEt.getText().toString(),String.valueOf(mCurrentAreaId),String.valueOf(userId),String.valueOf(gps.getWgLon()),String.valueOf(gps.getWgLat()),mCurrentAddress,filePath,proType)
                 .map(new Func1<ResponseBody, ResponseBody>() {
                     @Override
                     public ResponseBody call(ResponseBody responseBody) {
@@ -464,27 +471,31 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
                             String string = responseBody.string();
                             Log.e("xxx",string);
                             if (Utils.isGoodJson(string)){
-                                try {
-                                     JSONObject jsonObject = new JSONObject(string);
-                                    int code = jsonObject.getInt("code");
-                                    String msg = jsonObject.getString("msg");
-                                    if (code==Constants.SUCCESS_CODE){
-                                        Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
-                                        initAnimation();
-                                        mRoadEt.setText(null);
-                                        mCaseTitleEt.setText(null);
-                                        mUploadFormationLayout.setVisibility(View.GONE);
-                                        mBeginTourTv.setAnimation(mShowAction);
-                                        mBeginTourTv.setVisibility(View.VISIBLE);
-                                        findViewById(R.id.around_layout).setVisibility(View.GONE);
-                                        mImagePathList.clear();
-                                        commonAdapter.notifyDataSetChanged();
+                                    Gson gson = new Gson();
+                                    UploadEntry uploadEntry = gson.fromJson(string, UploadEntry.class);
+                                    if (uploadEntry.getCode()==Constants.SUCCESS_CODE){
+                                        if (proType.equals("1")){
+                                            Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
+                                            initAnimation();
+                                            mRoadEt.setText(null);
+                                            mCaseTitleEt.setText(null);
+                                            mUploadFormationLayout.setVisibility(View.GONE);
+                                            mBeginTourTv.setAnimation(mShowAction);
+                                            mBeginTourTv.setVisibility(View.VISIBLE);
+                                            findViewById(R.id.around_layout).setVisibility(View.GONE);
+                                            mImagePathList.clear();
+                                            commonAdapter.notifyDataSetChanged();
+                                        }else {
+                                            if (null!=uploadEntry.getData()){
+                                                uploadCase(uploadEntry.getData().getId());
+                                            }else {
+                                                ToastUtils.showShortToast(mContext,"服务器错误");
+                                            }
+                                        }
                                     }else {
-                                        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mContext,uploadEntry.getMsg(), Toast.LENGTH_SHORT).show();
                                     }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -501,7 +512,68 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
                 });
     }
 
+    private void uploadCase(int caseId){
+        if (!isFinishing()){
+            commonLoadDialog = DialogBuild.getBuild().createCommonLoadDialog(this,"正在加载");
+        }
+        int userId = SharedPreferenceUtils.getInt(this, "userId");
+        mService.saveCase(caseId,userId)
+                .map(new Func1<ResponseBody, ResponseBody>() {
+                    @Override
+                    public ResponseBody call(ResponseBody responseBody) {
+                        return responseBody;
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        if (null!=commonLoadDialog){
+                            commonLoadDialog.dismiss();
+                        }
+                        try {
+                            String string = responseBody.string();
+                            Log.e("xxx",string);
+                            if (Utils.isGoodJson(string)){
+                                try {
+                                    JSONObject jsonObject = new JSONObject(string);
+                                    int code = jsonObject.getInt("code");
+                                    String msg = jsonObject.getString("msg");
+                                    if (code==Constants.SUCCESS_CODE){
+                                        Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
+                                        initAnimation();
+                                        mRoadEt.setText(null);
+                                        mCaseTitleEt.setText(null);
+                                        mUploadFormationLayout.setVisibility(View.GONE);
+                                        mBeginTourTv.setAnimation(mShowAction);
+                                        mBeginTourTv.setVisibility(View.VISIBLE);
+                                        findViewById(R.id.around_layout).setVisibility(View.GONE);
+                                        mImagePathList.clear();
+                                        commonAdapter.notifyDataSetChanged();
 
+                                    }else {
+                                        Toast.makeText(mContext,msg, Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (null!=commonLoadDialog){
+                            commonLoadDialog.dismiss();
+                        }
+                        throwable.printStackTrace();
+                    }
+                });
+
+    }
     /**
      * 读取json路径
      */
@@ -574,8 +646,22 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
     private boolean mTourStart;
 
     public void back(View view){
+        if (mTourStart){
+            ToastUtils.showShortToast(mContext,"请先结束巡查");
+            return;
+        }
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mTourStart){
+            ToastUtils.showShortToast(mContext,"请先结束巡查");
+            return;
+        }
+        super.onBackPressed();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -646,6 +732,7 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
             if (null!=commonLoadDialog){
                 commonLoadDialog.dismiss();
             }
+            Log.e("xxx","xx"+location.getLatitude()+"\t"+location.getLongitude());
             MyLocationData locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                     // 此处设置开发者获取到的方向信息，顺时针0-360
@@ -667,6 +754,9 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
     }
     private int index = 0;
     private void uploadLocation(){
+        if (null==gps){
+            return;
+        }
         Map<String,String> keyMap = new HashMap<>();
         int areaId = SharedPreferenceUtils.getInt(mContext, "areaId");
         int userId = SharedPreferenceUtils.getInt(mContext, "userId");
@@ -683,6 +773,7 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
         }
         keyMap.put("longitude",String.valueOf(gps.getWgLon()));
         keyMap.put("latitude",String.valueOf(gps.getWgLat()));
+        Log.e("xxx",keyMap.toString());
         mService.uploadLocation(keyMap)
                 .map(new Func1<ResponseBody, ResponseBody>() {
                     @Override
@@ -696,6 +787,7 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
                     public void call(ResponseBody responseBody) {
                         try {
                             String string = responseBody.string();
+                            Log.e("xxx",string);
                             if (Utils.isGoodJson(string)){
                                 try {
                                     JSONObject jsonObject = new JSONObject(string);

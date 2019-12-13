@@ -25,7 +25,8 @@ public interface AppHttpService {
                                      @Query("description")String desc,@Query("areaId")String areaId,
                                      @Query("createBy")String creatBy,@Query("longitude")String longitude,
                                      @Query("latitude")String latitude,@Query("address")String address,
-                                     @Query("filepaths")String filepaths);//新增案件
+                                     @Query("filepaths")String filepaths,
+                                     @Query("patrolType")String patrolType);//新增案件
     @POST("case/findCase")
     Observable<ResponseBody> findCase(@Query("user_id")String userId);//查询列表（巡路员）
     @POST("case/findCaseById")

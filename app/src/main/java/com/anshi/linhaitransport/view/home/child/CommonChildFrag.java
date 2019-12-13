@@ -25,6 +25,7 @@ import com.anshi.linhaitransport.net.AppHttpService;
 import com.anshi.linhaitransport.selfview.CanScorllRecyclerView;
 import com.anshi.linhaitransport.selfview.EaseImageView;
 import com.anshi.linhaitransport.utils.Constants;
+import com.anshi.linhaitransport.utils.StatusBarUtils;
 import com.anshi.linhaitransport.utils.Utils;
 import com.anshi.linhaitransport.utils.glide.GlideApp;
 import com.anshi.linhaitransport.view.roadmanager.RoadManagerActivity;
@@ -88,6 +89,19 @@ public class CommonChildFrag extends Fragment {
         View view = inflater.inflate(R.layout.frag_common_child,container,false);
         initView(view);
         return view;
+    }
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (this!=null&&!hidden){
+            StatusBarUtils.setWindowStatusBarColor(getActivity(),R.color.top_blue);
+
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        StatusBarUtils.setWindowStatusBarColor(getActivity(),R.color.top_blue);
     }
 
     private void initView(View view) {

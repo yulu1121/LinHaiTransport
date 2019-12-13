@@ -200,7 +200,13 @@ public class RoadPersonActivity extends BaseActivity {
                 mDealRecycler.setAdapter(commonAdapterOne);
             }
         }else {
-            mDealTv.setText("请等待回复意见");
+            if (dataBean.getCasedata().getPatrolType().equals("2")){
+                findViewById(R.id.solution_tv).setVisibility(View.GONE);
+                mDealTv.setVisibility(View.GONE);
+            }else {
+                mDealTv.setText("请等待回复意见");
+            }
+
         }
         //返回意见结束
 

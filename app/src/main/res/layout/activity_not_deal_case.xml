@@ -47,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorYellow"
                 android:text="解决方案"
+                android:id="@+id/solution_tv"
                 android:layout_marginTop="10dp"
                 android:textSize="@dimen/large_txt"
                 android:layout_marginStart="10dp"

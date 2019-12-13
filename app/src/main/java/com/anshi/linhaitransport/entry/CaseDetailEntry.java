@@ -113,7 +113,7 @@ public class CaseDetailEntry {
             private Object longitude;
             private Object latitude;
             private String filepaths;
-
+            private String patrolType;
             public Object getSearchValue() {
                 return searchValue;
             }
@@ -256,6 +256,14 @@ public class CaseDetailEntry {
 
             public void setFilepaths(String filepaths) {
                 this.filepaths = filepaths;
+            }
+
+            public String getPatrolType() {
+                return patrolType;
+            }
+
+            public void setPatrolType(String patrolType) {
+                this.patrolType = patrolType;
             }
 
             public static class ParamsBean {

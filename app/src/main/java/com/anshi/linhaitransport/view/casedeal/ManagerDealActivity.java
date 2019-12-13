@@ -128,6 +128,7 @@ public class ManagerDealActivity extends BaseActivity {
                         }
                         try {
                             String string = responseBody.string();
+                            Log.e("xxx",string);
                             if (Utils.isGoodJson(string)){
                                 Gson gson = new Gson();
                                 CaseListEntry caseListEntry = gson.fromJson(string, CaseListEntry.class);
@@ -200,22 +201,28 @@ public class ManagerDealActivity extends BaseActivity {
                 final Button itemBtn = holder.getView(R.id.item_btn);
                 Button otherBtn = holder.getView(R.id.other_btn);
                 otherBtn.setVisibility(View.GONE);
-                switch (dataBean.getDispose_state()) {
-                    case Constants.WAITTING_DEAL:
-                        itemBtn.setText("处理");
-                        break;
-                    case Constants.RELFCT_DEAL:
-                        itemBtn.setText("已反映");
-                        break;
-                    case Constants.FIX_DEAL:
-                        itemBtn.setText("已处理");
-                        break;
-                    case Constants.REVERSE_DEAL:
-                        itemBtn.setText("已转发");
-                        break;
-                    case Constants.END_DEAL:
-                        itemBtn.setText("结案");
-                        break;
+                if (null!=dataBean.getPatrol_type()){
+                    if (dataBean.getPatrol_type().equals("1")){
+                        switch (dataBean.getDispose_state()) {
+                            case Constants.WAITTING_DEAL:
+                                itemBtn.setText("处理");
+                                break;
+                            case Constants.RELFCT_DEAL:
+                                itemBtn.setText("已反映");
+                                break;
+                            case Constants.FIX_DEAL:
+                                itemBtn.setText("已处理");
+                                break;
+                            case Constants.REVERSE_DEAL:
+                                itemBtn.setText("已转发");
+                                break;
+                            case Constants.END_DEAL:
+                                itemBtn.setText("结案");
+                                break;
+                        }
+                    }else {
+                        itemBtn.setText("养护");
+                    }
                 }
                 try {
                     Date parse = simpleDateFormat.parse(dataBean.getCreate_date());
@@ -231,7 +238,7 @@ public class ManagerDealActivity extends BaseActivity {
                 holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)){
+                        if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)||dataBean.getPatrol_type().equals("2")){
                             Intent intent = new Intent(mContext,RoadPersonActivity.class);
                             intent.putExtra("id",dataBean.getCase_id());
                             startActivity(intent);
@@ -245,7 +252,7 @@ public class ManagerDealActivity extends BaseActivity {
                 itemBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)){
+                        if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)||dataBean.getPatrol_type().equals("2")){
                             Intent intent = new Intent(mContext,RoadPersonActivity.class);
                             intent.putExtra("id",dataBean.getCase_id());
                             startActivity(intent);

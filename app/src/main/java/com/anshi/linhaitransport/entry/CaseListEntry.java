@@ -61,6 +61,7 @@ public class CaseListEntry {
         private String dispose_type;
         private int case_id;
         private String dispose_state;
+        private String patrol_type;
         public String getArea_name() {
             return area_name;
         }
@@ -155,6 +156,15 @@ public class CaseListEntry {
 
         public void setDispose_state(String dispose_state) {
             this.dispose_state = dispose_state;
+        }
+
+
+        public String getPatrol_type() {
+            return patrol_type;
+        }
+
+        public void setPatrol_type(String patrol_type) {
+            this.patrol_type = patrol_type;
         }
     }
 }

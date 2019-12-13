@@ -2,6 +2,7 @@ package com.anshi.linhaitransport.view.map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.anshi.linhaitransport.R;
 import com.anshi.linhaitransport.base.BaseActivity;
+import com.anshi.linhaitransport.entry.MarkerInfoUtil;
 import com.anshi.linhaitransport.utils.StatusBarUtils;
 import com.anshi.linhaitransport.utils.Utils;
 import com.baidu.location.BDAbstractLocationListener;
@@ -39,8 +41,14 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.PoiDetailInfo;
 import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.district.DistrictResult;
+import com.baidu.mapapi.search.district.DistrictSearch;
+import com.baidu.mapapi.search.district.DistrictSearchOption;
+import com.baidu.mapapi.search.district.OnGetDistricSearchResultListener;
 import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
 import com.baidu.mapapi.search.poi.PoiDetailResult;
 import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
@@ -62,7 +70,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainMapActivity extends BaseActivity implements OnGetSuggestionResultListener,OnGetPoiSearchResultListener {
+public class MainMapActivity extends BaseActivity implements OnGetSuggestionResultListener,OnGetPoiSearchResultListener,OnGetDistricSearchResultListener {
     private MapView mMapView;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
@@ -71,11 +79,14 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
     private SuggestionSearch mSearch;
     private String city;
     private PoiSearch mPoiSearch;
-    private LinearLayout mLinearLayout;
+    private String mRoad;
+    private DistrictSearch mDistrictSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
+        mDistrictSearch = DistrictSearch.newInstance();
+        mDistrictSearch.setOnDistrictSearchListener(this);
         initView();
         initLocation();
         initPopuData();
@@ -103,6 +114,7 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
                             if (popupWindow.isShowing()){
                                 popupWindow.dismiss();
                             }
+                            mRoad = gradeListBean.key;
                             Utils.hideSoftKeyboard(MainMapActivity.this);
                             mPoiSearch.searchPoiDetail(new PoiDetailSearchOption()
                                     .poiUids(gradeListBean.uid));
@@ -129,13 +141,54 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         mBaiduMap.addOverlay(mOverlayOptions);
     }
 
+
+    private void setMarkerInfo() {
+         List<MarkerInfoUtil> options = new ArrayList<>();
+         options.add(new MarkerInfoUtil(41.165937752848,121.33713309907,"S308-大锦线"));
+         options.add(new MarkerInfoUtil( 41.252576,121.242061,"S204-渤海大道"));
+         options.add(new MarkerInfoUtil(41.114252180318,121.37222585297,"X711-凌海大道"));
+         options.add(new MarkerInfoUtil( 41.152451172074, 121.35376315949,"G102-京抚线"));
+         options.add(new MarkerInfoUtil(41.206838,121.146194,"S209-宝锦线"));
+         options.add(new MarkerInfoUtil(40.92743,121.391539,"滨海公路"));
+         options.add(new MarkerInfoUtil(41.184101625127,121.38592546115,"凌海农电新村"));
+         options.add(new MarkerInfoUtil(41.225680669061,121.32575147843 ,"兴闫线(3级道路)"));
+         options.add(new MarkerInfoUtil(41.1821590328,  121.36138644954 ,"锦凌路(4级道路)"));
+         options.add(new MarkerInfoUtil(41.209037090494, 121.36341832677 ,"兴工街(4级道路)"));
+         options.add(new MarkerInfoUtil(41.233104,121.009968 ,"牤牛屯村"));
+         options.add(new MarkerInfoUtil(41.247301387693, 120.91505859588  ,"X052-锦东线"));
+         options.add(new MarkerInfoUtil(41.067543334462,121.26744129997999,"双何线"));
+        //112.17453,32.06426//32.04449,112.143557//32.052539,112.142191
+//创建OverlayOptions属性
+        LatLng latLng ;
+        OverlayOptions option;
+        List<OverlayOptions> optionsList = new ArrayList<>();
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.pg_location);
+        for(MarkerInfoUtil info:options){
+            //获取经纬度
+            latLng = new LatLng(info.getLatitude(),info.getLongitude());
+            //设置marker
+            Bundle bundle = new Bundle();
+            //info必须实现序列化接口
+            bundle.putString("address", info.getName());
+            option = new MarkerOptions()
+                    .position(latLng)//设置位置
+                    .extraInfo(bundle)
+                    .icon(bitmapDescriptor);
+            optionsList.add(option);
+            //添加marker
+            //使用marker携带info信息，当点击事件的时候可以通过marker获得info信息
+        }
+        mBaiduMap.addOverlays(optionsList);
+    }
+
+
+
     @SuppressLint("InflateParams")
     private void initView(){
         TextView title = findViewById(R.id.title_tv);
         title.setText("凌海市地图");
         mRoadEt = findViewById(R.id.road_et);
         mMapView = findViewById(R.id.mapview);
-        mLinearLayout = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.baidu_map_infowindow,null);
         // 不显示百度地图Logo
         mMapView.removeViewAt(1);
         String customStyleFilePath = getCustomStyleFilePath(this, CUSTOM_FILE_NAME_GRAY);
@@ -148,14 +201,20 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         mBaiduMap.setMyLocationEnabled(true);
+        mDistrictSearch.searchDistrict(new DistrictSearchOption()
+                .cityName("凌海"));
+        setMarkerInfo();
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onMarkerClick(final Marker marker) {
-
+                LinearLayout mLinearLayout = (LinearLayout) LayoutInflater.from(MainMapActivity.this).inflate(R.layout.baidu_map_infowindow,null);
                 EditText mText = mLinearLayout.findViewById(R.id.et_name);
                 EditText phone = mLinearLayout.findViewById(R.id.et_person);
                 EditText textView = mLinearLayout.findViewById(R.id.et_xunlu);
+                mText.setText("纬度:"+marker.getPosition().latitude);
+                phone.setText("经度:"+marker.getPosition().longitude);
+                textView.setText("道路:"+marker.getExtraInfo().getString("address"));
                 Button uploadBtn = mLinearLayout.findViewById(R.id.upload_btn);
                 uploadBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -164,7 +223,6 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
                     }
                 });
                 InfoWindow window = new InfoWindow(mLinearLayout,marker.getPosition(),-47);
-
                 marker.showInfoWindow(window);
                 return true;
             }
@@ -259,7 +317,7 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
         mMapView.onDestroy();
         mSearch.destroy();
-
+        mDistrictSearch.destroy();
     }
 
 
@@ -282,7 +340,6 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
         }
         List<PoiInfo> allPoi = poiResult.getAllPoi();
         if (allPoi.size()>0){
-            mBaiduMap.clear();
             List<LatLng> mList = new ArrayList<>();
             for (int i = 0; i <allPoi.size() ; i++) {
                     mList.add(allPoi.get(i).getLocation());
@@ -314,7 +371,6 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
     public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
         List<PoiDetailInfo> poiDetailInfoList = poiDetailSearchResult.getPoiDetailInfoList();
         if (poiDetailInfoList!=null&&poiDetailInfoList.size()>0){
-            mBaiduMap.clear();
             for (int i = 0; i < poiDetailInfoList.size(); i++) {
                 LatLng location = poiDetailInfoList.get(i).getLocation();
                 LatLng point = new LatLng(location.latitude, location.longitude);
@@ -322,21 +378,49 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
                 BitmapDescriptor bitmap = BitmapDescriptorFactory
                         .fromResource(R.drawable.pg_location);
 //构建MarkerOption，用于在地图上添加Marker
-
+                Bundle bundle = new Bundle();
+                bundle.putString("address",mRoad);
                 OverlayOptions option = new MarkerOptions()
+                        .extraInfo(bundle)
                         .position(point)
                         .icon(bitmap);
 //在地图上添加Marker，并显示
                 mBaiduMap.addOverlay(option);
             }
+            Log.e("xxx",poiDetailInfoList.get(0).getLocation()+"");
             MapStatusUpdate status = MapStatusUpdateFactory.newLatLng(poiDetailInfoList.get(0).getLocation());
             mBaiduMap.setMapStatus(status);//直接到中间
+
         }
     }
 
     @Override
     public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
 
+    }
+
+    @Override
+    public void onGetDistrictResult(DistrictResult districtResult) {
+        if (null != districtResult) {
+            //获取边界坐标点，并展示
+            if (districtResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                List<List<LatLng>> polyLines = districtResult.getPolylines();
+                if (polyLines == null) {
+                    return;
+                }
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for (List<LatLng> polyline : polyLines) {
+                    OverlayOptions ooPolyline11 = new PolylineOptions().width(10)
+                            .points(polyline).dottedLine(true).color(Color.BLUE);
+                    mBaiduMap.addOverlay(ooPolyline11);
+                    for (LatLng latLng : polyline) {
+                        builder.include(latLng);
+                    }
+                }
+                mBaiduMap.setMapStatus(MapStatusUpdateFactory
+                        .newLatLngBounds(builder.build()));
+            }
+        }
     }
 
     //自定义的定位监听
@@ -349,7 +433,6 @@ public class MainMapActivity extends BaseActivity implements OnGetSuggestionResu
             }
 
             MyLocationData locData = new MyLocationData.Builder()
-                    .accuracy(location.getRadius())
                     // 此处设置开发者获取到的方向信息，顺时针0-360
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();

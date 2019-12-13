@@ -99,7 +99,6 @@ public class CaseDealActivity extends BaseActivity {
                         }
                         try {
                             String string = responseBody.string();
-                            Log.e("xxx",string);
                             if (Utils.isGoodJson(string)){
                                 Gson gson = new Gson();
                                 CaseListEntry caseListEntry = gson.fromJson(string, CaseListEntry.class);

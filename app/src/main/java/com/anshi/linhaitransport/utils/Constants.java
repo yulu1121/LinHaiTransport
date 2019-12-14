@@ -3,9 +3,9 @@ package com.anshi.linhaitransport.utils;
 public class Constants {
     // https://www.showdoc.cc/sharfish?page_id=2523683048128346
     //to.anssy.com
-    public static final String COMMON_URL_HEADER = "http://to.anssy.com/lhtraffic/lhjtapp/";
-    public static final String IMAGE_URL = "http://to.anssy.com/lhtraffic";
-    public static final String WEB_URL = "http://to.anssy.com/lhtraffic/lhjtapp/new/getNewNote/";
+    public static final String COMMON_URL_HEADER = "http://do.anssy.com/lhtraffic/lhjtapp/";
+    public static final String IMAGE_URL = "http://do.anssy.com/lhtraffic";
+    public static final String WEB_URL = "http://do.anssy.com/lhtraffic/lhjtapp/new/getNewNote/";
     public static final String CURRENT_LONGTITUDE="longtitude";
     public static final String CURRENT_LATITUDE = "latitude";
 

@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:allowBackup="true"
@@ -38,7 +39,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
             >
+
         </activity>
+        <activity
+            android:name="com.tencent.bugly.beta.ui.BetaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|locale"
+            android:theme="@android:style/Theme.Translucent" />
         <activity android:name=".view.map.MainMapActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
@@ -98,6 +104,17 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/horizontal_slide"
             />
+        <provider
+            android:name=".utils.BuglyFileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="name,authorities,exported,grantUriPermissions">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"
+                tools:replace="name,resource"/>
+        </provider>
         <!--知乎图片选择器，适配7.0系统-->
         <provider
             android:name=".utils.PhotoFileProvider"

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.anshi.linhaitransport.R;
 import com.anshi.linhaitransport.base.BaseActivity;
+import com.anshi.linhaitransport.utils.Constants;
 import com.anshi.linhaitransport.utils.DialogBuild;
 import com.anshi.linhaitransport.utils.SharedPreferenceUtils;
 import com.anshi.linhaitransport.utils.Utils;
@@ -24,6 +25,7 @@ import com.anshi.linhaitransport.view.home.child.CommonChildFrag;
 import com.anshi.linhaitransport.view.login.LoginActivity;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.multi.CompositeMultiplePermissionsListener;
+import com.tencent.bugly.beta.Beta;
 
 public class MainActivity extends BaseActivity{
     private  boolean isExit = false;
@@ -54,8 +56,11 @@ public class MainActivity extends BaseActivity{
         Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new CompositeMultiplePermissionsListener(multiplePermissionListener, DialogBuild.getBuild().createPermissionDialog(this,"权限提醒","请给予拍照和定位的权限")))
                 .check();
         setContentView(R.layout.activity_main);
+        SharedPreferenceUtils.saveFloat(this, Constants.CURRENT_LONGTITUDE,0);
+        SharedPreferenceUtils.saveFloat(this,Constants.CURRENT_LATITUDE,0);
 //        StatusBarUtil.setLightMode(this);
 //        StatusBarUtil.setTranslucentForCoordinatorLayout(this,0);
+        Beta.checkUpgrade(false,false);
         initView();
         loadFragments();
         initClick();

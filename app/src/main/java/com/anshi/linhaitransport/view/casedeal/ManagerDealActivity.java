@@ -240,14 +240,23 @@ public class ManagerDealActivity extends BaseActivity {
                 holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)||dataBean.getPatrol_type().equals("2")){
+                        if (dataBean.getPatrol_type().equals("2")){
                             Intent intent = new Intent(mContext,RoadPersonActivity.class);
                             intent.putExtra("id",dataBean.getCase_id());
                             startActivity(intent);
                         }else {
-                            Intent intent = new Intent(mContext,DealDetailActivity.class);
-                            intent.putExtra("id",dataBean.getCase_id());
-                            startActivityForResult(intent,CODE_MANAGE);
+                            if (dataBean.getDispose_state()!=null){
+                                if (dataBean.getDispose_state().equals(Constants.FIX_DEAL)){
+                                    Intent intent = new Intent(mContext,RoadPersonActivity.class);
+                                    intent.putExtra("id",dataBean.getCase_id());
+                                    startActivity(intent);
+
+                                }else {
+                                    Intent intent = new Intent(mContext,DealDetailActivity.class);
+                                    intent.putExtra("id",dataBean.getCase_id());
+                                    startActivityForResult(intent,CODE_MANAGE);
+                                }
+                            }
                         }
                     }
                 });

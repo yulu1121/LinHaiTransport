@@ -192,15 +192,17 @@ public class EndCaseActivity extends BaseActivity {
                 TextView contentTv = holder.getView(R.id.item_content_tv);
                 final Button itemBtn = holder.getView(R.id.item_btn);
                 Button otherBtn = holder.getView(R.id.other_btn);
-                switch (dataBean.getDispose_state()) {
-                    case Constants.FIX_DEAL:
-                        itemBtn.setText("结案");
-                        otherBtn.setVisibility(View.VISIBLE);
-                        break;
-                    case Constants.END_DEAL:
-                        itemBtn.setText("已结案");
-                        otherBtn.setVisibility(View.GONE);
-                        break;
+                if (null!=dataBean.getDispose_state()){
+                    switch (dataBean.getDispose_state()) {
+                        case Constants.FIX_DEAL:
+                            itemBtn.setText("结案");
+                            otherBtn.setVisibility(View.VISIBLE);
+                            break;
+                        case Constants.END_DEAL:
+                            itemBtn.setText("已结案");
+                            otherBtn.setVisibility(View.GONE);
+                            break;
+                    }
                 }
                 try {
                     Date parse = simpleDateFormat.parse(dataBean.getCreate_date());

@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
@@ -58,6 +59,8 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.google.gson.Gson;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.previewlibrary.GPreviewBuilder;
@@ -134,6 +137,7 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_tour_manager);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         takePhoto = getTakePhoto();
         mService = BaseApplication.getInstances().getAppRetrofit().create(AppHttpService.class);
         initView();
@@ -623,24 +627,25 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
     protected void onPause() {
         super.onPause();
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        mMapView.onPause();
     }
     @Override
     protected void onStop() {
         super.onStop();
         //关闭定位
         mBaiduMap.setMyLocationEnabled(false);
-        if(mLocationClient.isStarted()){
-            mLocationClient.stop();
-        }
+
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mBaiduMap.clear();
+        if(mLocationClient.isStarted()){
+            mLocationClient.stop();
+        }
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
         mMapView.onDestroy();
         weakHandler.removeCallbacksAndMessages(null);
+
 
     }
     private boolean mTourStart;
@@ -720,7 +725,6 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
     public void takePhoto(View view) {
         selectFile();
     }
-
     //自定义的定位监听
     private class MyLocationListener extends BDAbstractLocationListener {
         @Override
@@ -732,6 +736,10 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
             if (null!=commonLoadDialog){
                 commonLoadDialog.dismiss();
             }
+            if (String.valueOf(location.getLongitude()).contains("E")){
+                return;
+            }
+
             Log.e("xxx","xx"+location.getLatitude()+"\t"+location.getLongitude());
             MyLocationData locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
@@ -739,8 +747,25 @@ public class TourManagerActivity extends TakePhotoActivity implements View.OnCli
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             gps = new Gps(location.getLatitude(),location.getLongitude());
-//            SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LATITUDE, (float) location.getLatitude());
-//            SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LONGTITUDE, (float) location.getLongitude());
+//            if (mTourStart){
+//                if (SharedPreferenceUtils.getFloat(mContext,Constants.CURRENT_LATITUDE)==0){
+//                    Log.e("xxx","jindas");
+//                    SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LATITUDE, (float) location.getLatitude());
+//                    SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LONGTITUDE, (float) location.getLongitude());
+//                }else {
+//                    float lat = SharedPreferenceUtils.getFloat(mContext, Constants.CURRENT_LATITUDE);
+//                    float longitude = SharedPreferenceUtils.getFloat(mContext, Constants.CURRENT_LONGTITUDE);
+//                    LatLng pointOne = new LatLng(lat,longitude);
+//                    LatLng pointTwo = new LatLng(location.getLatitude(),location.getLongitude());
+//                    Log.e("xxx","jinrasdas"+DistanceUtil.getDistance(pointOne,pointTwo));
+//                    if (DistanceUtil.getDistance(pointOne,pointTwo)>=20){
+//                        SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LATITUDE, (float) location.getLatitude());
+//                        SharedPreferenceUtils.saveFloat(mContext,Constants.CURRENT_LONGTITUDE, (float) location.getLongitude());
+//                    }else {
+//                        canUpload = false;
+//                    }
+//                }
+//            }
             mCurrentAddress = location.getAddrStr();
             mAddressTv.setText(location.getAddrStr());
             mBaiduMap.setMyLocationData(locData);

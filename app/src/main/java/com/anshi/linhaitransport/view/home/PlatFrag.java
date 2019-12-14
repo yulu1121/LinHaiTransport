@@ -23,6 +23,7 @@ import com.anshi.linhaitransport.view.filemanager.FileManagerActivity;
 import com.anshi.linhaitransport.view.map.MainMapActivity;
 import com.anshi.linhaitransport.view.roadstructure.RoadStructureActivity;
 import com.anshi.linhaitransport.view.tourmanager.TourManagerActivity;
+import com.tencent.bugly.beta.Beta;
 
 public class PlatFrag extends Fragment implements View.OnClickListener {
     private Context mContext;
@@ -60,6 +61,7 @@ public class PlatFrag extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.end_case_tv).setOnClickListener(this);
         view.findViewById(R.id.out_login_tv).setOnClickListener(this);
         view.findViewById(R.id.road_manager_tv).setOnClickListener(this);
+        view.findViewById(R.id.version_tv).setOnClickListener(this);
         completeView(view);
 
     }
@@ -87,7 +89,6 @@ public class PlatFrag extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         StatusBarUtils.setWindowStatusBarColor(getActivity(),R.color.colorBlue);
-        StatusBarUtils.setStatusTextColor(false,getActivity());
     }
 
     @Override
@@ -95,7 +96,7 @@ public class PlatFrag extends Fragment implements View.OnClickListener {
         super.onHiddenChanged(hidden);
         if (this!=null&&!hidden){
             StatusBarUtils.setWindowStatusBarColor(getActivity(),R.color.colorBlue);
-            StatusBarUtils.setStatusTextColor(false,getActivity());
+            //StatusBarUtils.setStatusTextColor(false,getActivity());
         }
     }
 
@@ -137,6 +138,9 @@ public class PlatFrag extends Fragment implements View.OnClickListener {
                 break;
             case R.id.out_login_tv:
                 createOutLogin();
+                break;
+            case R.id.version_tv:
+                Beta.checkUpgrade(true,false);
                 break;
         }
     }

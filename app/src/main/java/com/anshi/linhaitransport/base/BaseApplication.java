@@ -20,6 +20,7 @@ import com.scwang.smart.refresh.layout.api.RefreshHeader;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshFooterCreator;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator;
+import com.tencent.bugly.Bugly;
 import com.tencent.smtt.sdk.QbSdk;
 
 import retrofit2.Retrofit;
@@ -68,6 +69,7 @@ public class BaseApplication extends Application {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
+        Bugly.init(getApplicationContext(), "55203a8623", true);
         SDKInitializer.initialize(this);
         SDKInitializer.setCoordType(CoordType.BD09LL);
         ZoomMediaLoader.getInstance().init(new TestImageLoader());

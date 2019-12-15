@@ -13,7 +13,6 @@
         android:layout_height="120dp"
         android:id="@+id/item_iv"
         app:ease_radius="10dp"
-        android:src="@drawable/pg_login_back"
         android:layout_margin="10dp"
         app:ease_border_width="1dp"
         app:ease_border_color="@color/lightgrey"
@@ -28,7 +27,7 @@
         android:textSize="@dimen/medium_txt"
         android:layout_marginEnd="10dp"
         android:id="@+id/item_address_tv"
-        android:maxLines="2"
+        android:maxLines="1"
         android:ellipsize="end"
         android:layout_marginTop="5dp"
         />
